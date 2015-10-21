@@ -9,7 +9,7 @@ import Foundation
 /**
 A Model is a container of objects arranged in sections with optional header and footer text.
 */
-public struct Model <ObjectType> {
+public class Model <ObjectType> {
   public typealias Section = ((header: String?, footer: String?)?, objects: [ObjectType])
 
   var sections: [Section]
@@ -24,14 +24,14 @@ public struct Model <ObjectType> {
   /**
   Initializes the model with a single section containing a list of objects.
   */
-  public init(list: [ObjectType]) {
+  public convenience init(list: [ObjectType]) {
     self.init(sections: [(nil, objects: list)])
   }
 
   /**
   Initializes the model with a single, object-less section.
   */
-  public init() {
+  public convenience init() {
     self.init(sections: [(nil, objects: [])])
   }
 }
@@ -92,54 +92,54 @@ extension Model {
 
 // Mutability
 extension Model {
-  mutating func addObject(object: ObjectType) -> [NSIndexPath] {
+  func addObject(object: ObjectType) -> [NSIndexPath] {
     self.ensureMinimalState()
     return self.addObject(object, toSection: self.sections.count - 1)
   }
 
-  mutating func addObjects(objects: [ObjectType]) -> [NSIndexPath] {
+  func addObjects(objects: [ObjectType]) -> [NSIndexPath] {
     return objects.map{ self.addObject($0) }.reduce([], combine: +)
   }
 
-  mutating func addObject(object: ObjectType, toSection sectionIndex: Int) -> [NSIndexPath] {
+  func addObject(object: ObjectType, toSection sectionIndex: Int) -> [NSIndexPath] {
     assert(sectionIndex < self.sections.count, "Section index out of bounds.")
 
     self.sections[sectionIndex].objects.append(object)
     return [NSIndexPath(forRow: self.sections[sectionIndex].objects.count - 1, inSection: sectionIndex)]
   }
 
-  mutating func addObjects(objects: [ObjectType], toSection sectionIndex: Int) -> [NSIndexPath] {
+  func addObjects(objects: [ObjectType], toSection sectionIndex: Int) -> [NSIndexPath] {
     return objects.map{ self.addObject($0, toSection: sectionIndex) }.reduce([], combine: +)
   }
 
-  mutating func removeObjectAtIndexPath(indexPath: NSIndexPath) -> [NSIndexPath] {
+  func removeObjectAtIndexPath(indexPath: NSIndexPath) -> [NSIndexPath] {
     self.sections[indexPath.section].objects.removeAtIndex(indexPath.row)
     return [indexPath]
   }
 
-  mutating func addSectionWithHeader(header: String) -> NSIndexSet {
+  func addSectionWithHeader(header: String) -> NSIndexSet {
     self.sections.append(((header: header, nil), objects: []))
     return NSIndexSet(index: self.sections.count - 1)
   }
 
-  mutating func insertSectionWithHeader(header: String, atIndex sectionIndex: Int) -> NSIndexSet {
+  func insertSectionWithHeader(header: String, atIndex sectionIndex: Int) -> NSIndexSet {
     assert(sectionIndex < self.sections.count, "Section index out of bounds.")
 
     self.sections.insert(((header: header, nil), objects: []), atIndex: sectionIndex)
     return NSIndexSet(index: sectionIndex)
   }
 
-  mutating func removeSectionAtIndex(sectionIndex: Int) -> NSIndexSet {
+  func removeSectionAtIndex(sectionIndex: Int) -> NSIndexSet {
     self.sections.removeAtIndex(sectionIndex)
     return NSIndexSet(index: sectionIndex)
   }
 
-  mutating func setFooterForLastSection(footer: String) -> NSIndexSet {
+  func setFooterForLastSection(footer: String) -> NSIndexSet {
     self.ensureMinimalState()
     return self.setFooter(footer, atIndex: self.sections.count - 1)
   }
 
-  mutating func setFooter(footer: String, atIndex sectionIndex: Int) -> NSIndexSet {
+  func setFooter(footer: String, atIndex sectionIndex: Int) -> NSIndexSet {
     assert(sectionIndex < self.sections.count, "Section index out of bounds.")
 
     if self.sections[sectionIndex].0 == nil {
@@ -154,7 +154,7 @@ extension Model {
 
 // Private
 extension Model {
-  private mutating func ensureMinimalState() {
+  private func ensureMinimalState() {
     if self.sections.count == 0 {
       self.sections.append((nil, objects: []))
     }

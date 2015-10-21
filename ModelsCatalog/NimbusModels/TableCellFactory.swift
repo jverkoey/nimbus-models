@@ -22,7 +22,7 @@ public protocol TableCellObjectConfiguration {
 public protocol TableCell {
   func updateCellWithObject(object: TableCellObject)
 }
-
+/*
 /**
 The TableCellFactory class is the binding logic between Objects and Cells and should be used as the
 delegate for a TableModel.
@@ -107,3 +107,4 @@ extension TableCellFactory {
     return Singleton.instance
   }
 }
+*/

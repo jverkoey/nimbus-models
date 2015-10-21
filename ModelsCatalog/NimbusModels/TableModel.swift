@@ -7,93 +7,94 @@
 import Foundation
 import UIKit
 
-@objc public protocol TableModelDelegate {
-  func tableModel (tableModel: TableModel, cellForTableView tableView: UITableView, indexPath: NSIndexPath, object: AnyObject) -> UITableViewCell?
+public protocol SectionType {
+  typealias Element
+  var elements: [Element] { get set }
 }
 
-/**
-An instance of TableModel may be set as the data source for a UITableView.
+public protocol ModelType : SequenceType {
+  typealias Section: SectionType
 
-TableModel stores a collection of sectioned objects. Each object must conform to the TableCellObject
-protocol. Each section can have a header and/or footer title.
+  var sections: [Section] { get set }
+}
 
-Sections are tuples of the form:
-
-    ((header: String?, footer: String?)?, objects: [TableCellObject])
-
-When provided as the dataSource for a UITableView, the following occurs each time a cell needs to be
-displayed:
-
-- The table view requests a cell for a given index path.
-- The model retrieves the object corresponding to the index path and:
-- determines the object's cell class,
-- recycles or instantiates the cell, and
-- returns the cell to the table view.
-*/
-public class TableModel : NSObject {
-  typealias TableCellObjectModel = Model<AnyObject>
-
-  let model: TableCellObjectModel
-  weak var delegate: TableModelDelegate?
-
-  public init(sections: [TableCellObjectModel.Section], delegate: TableModelDelegate) {
-    self.model = TableCellObjectModel(sections: sections)
-    self.delegate = delegate
-    super.init()
-  }
-
-  public convenience init(list: [TableCellObject], delegate: TableModelDelegate) {
-    self.init(sections: [(nil, objects: list)], delegate: delegate)
-  }
-
-  public convenience init(delegate: TableModelDelegate) {
-    self.init(sections: [(nil, objects: [])], delegate: delegate)
-  }
-
-  func typedModel() -> TableCellObjectModel {
-    return self.model
+extension ModelType where Self: SequenceType {
+  public func generate() -> AnyGenerator<Section.Element> {
+    return anyGenerator(FlattenGenerator(self.sections.lazy.map{ $0.elements }.generate()))
   }
 }
 
-extension TableModel : ModelObjectInterface {
-  /**
-  Returns the object at the given index path.
-
-  Providing a non-existent index path will throw an exception.
-
-  :param:   path    A two-index index path referencing a specific object in the receiver.
-  :returns: The object found at path.
-  */
-  public func objectAtPath(path: NSIndexPath) -> AnyObject {
-    return self.typedModel().objectAtPath(path)
+extension ModelType {
+  public func objectAtPath(path: NSIndexPath) -> Section.Element {
+    assert(path.section < self.sections.count, "Section index out of bounds.")
+    assert(path.row < self.sections[path.section].elements.count, "Row index out of bounds.")
+    return self.sections[path.section].elements[path.row]
   }
 
-  /**
-  Returns the index path for an object matching needle if it exists in the receiver.
+  mutating func addObject(object: Section.Element) -> [NSIndexPath] {
+    return self.addObject(object, toSection: self.sections.count - 1)
+  }
 
-  :param:   needle    The object to search for in the receiver.
-  :returns: The index path of needle, if it was found, otherwise nil.
-  */
-  public func pathForObject(needle: AnyObject) -> NSIndexPath? {
-    return self.typedModel().pathForObject(needle)
+  mutating func addObject(object: Section.Element, toSection sectionIndex: Int) -> [NSIndexPath] {
+    assert(sectionIndex < self.sections.count, "Section index out of bounds.")
+
+    self.sections[sectionIndex].elements.append(object)
+    return [NSIndexPath(forRow: self.sections[sectionIndex].elements.count - 1, inSection: sectionIndex)]
+  }
+
+}
+
+public protocol TableViewSectionType: SectionType {
+  var title: String? { get }
+  var footer: String? { get }
+}
+
+public struct AnySection<T>: SectionType {
+  public var elements: [T]
+
+  public init(_ elements: [T]) {
+    self.elements = elements
   }
 }
 
-extension TableModel : UITableViewDataSource {
+extension Array: SectionType {
+  public typealias ElementType = Element
+  public var elements: [ElementType] { get {
+      return self
+    }
+    set {
+      self = newValue
+    }}
+}
+
+extension Array: TableViewSectionType {
+  public var title: String? { return nil }
+  public var footer: String? { return nil }
+}
+
+public class TableModel<T: TableViewSectionType> : NSObject, UITableViewDataSource, ModelType {
+  // TODO: Sections should not be an array - they should be some new collection type that always
+  // returns NSIndexSets when making modifications.
+  public var sections: [T]
+
+  public init(sections: [T]) {
+    self.sections = sections
+  }
+
   public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-    return self.typedModel().sections.count
+    return self.sections.count
   }
 
   public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.typedModel().sections[section].objects.count
+    return self.sections[section].elements.count
   }
 
   public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    return self.typedModel().sections[section].0?.header
+    return self.sections[section].title
   }
 
   public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-    return self.typedModel().sections[section].0?.footer
+    return self.sections[section].footer
   }
 
   public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -101,7 +102,9 @@ extension TableModel : UITableViewDataSource {
   }
 
   public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let object: AnyObject = self.typedModel().objectAtPath(indexPath)
-    return self.delegate!.tableModel(self, cellForTableView: tableView, indexPath: indexPath, object: object)!
+    let object = self.objectAtPath(indexPath)
+    let cell = UITableViewCell()
+    cell.textLabel?.text = "\(object)"
+    return cell
   }
 }
