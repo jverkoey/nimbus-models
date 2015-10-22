@@ -3,54 +3,62 @@
 import UIKit
 import XCPlayground
 
-protocol IndexPathArrayType: CollectionType {
+protocol SectionType : ArrayLiteralConvertible {
   typealias Element
-  init(_ elements: [Element])
+  var elements: [Element] { get }
 }
 
-protocol SectionType: ArrayLiteralConvertible {
-  typealias Element
-  typealias ElementCollectionType: IndexPathArrayType
-  var elements: Self.ElementCollectionType { get set }
-}
-
-protocol ModelType: ArrayLiteralConvertible {
+protocol ModelType : ArrayLiteralConvertible {
   typealias Section: SectionType
-  typealias SectionCollectionType: IndexPathArrayType
-  var sections: Self.SectionCollectionType { get set }
+  var sections: [Section] { get }
+
+  mutating func append(element: Self.Section.Element, toSection: Array<Section>.Index) -> NSIndexPath
+  mutating func append(element: Self.Section.Element) -> NSIndexPath
 }
 
-struct IndexPathArray<Element>: IndexPathArrayType {
-  private var elements: [Element]
-
-  var startIndex: Int { return 0 }
-  var endIndex: Int { return self.elements.count }
-  subscript (index: Int) -> Element {
-    return self.elements[index]
-  }
-
-  init(_ elements: [Element]) {
-    self.elements = elements
+extension ModelType {
+  mutating func append(element: Self.Section.Element) -> NSIndexPath {
+    return self.append(element, toSection: self.sections.count - 1)
   }
 }
+
+//---------------
 
 struct TableSection<T>: SectionType {
   typealias Element = T
-  var elements: IndexPathArray<T>
+
+  var elements: [Element] {
+    return self._storage
+  }
+
+  private var _storage: [Element]
+
+  init(_ elements: [Element]) {
+    self._storage = elements
+  }
 
   init(arrayLiteral elements: Element...) {
-    self.elements = IndexPathArray(elements)
+    self._storage = elements
   }
 }
 
 class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
   typealias Section = TableSection<T>
 
-  required init(arrayLiteral elements: Section...) {
-    self.sections = IndexPathArray(elements)
+  var sections: [Section] {
+    return self._storage
   }
 
-  var sections: IndexPathArray<Section>
+  private var _storage: [Section]
+
+  func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
+    self._storage[toSection]._storage.append(element)
+    return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
+  }
+
+  required init(arrayLiteral elements: Section...) {
+    self._storage = elements
+  }
 
   func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     return self.sections.count
@@ -68,10 +76,16 @@ class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
   }
 }
 
-let model: TableModel<String> = [["cell1", "cell"], ["group2"]]
+extension NSIndexPath {
+  public override var description: String { return "section \(self.section) item \(self.item)" }
+}
+
+var model: TableModel<String> = [["cell1", "cell"], ["group2"]]
 let tableView = UITableView(frame: CGRectMake(0, 0, 320, 480), style: .Grouped)
 
-model.sections[1].elements[0]
+model.append("Bob", toSection: 0)
+model.append("Bear")
+model.append("Cat")
 
 tableView.dataSource = model
 
