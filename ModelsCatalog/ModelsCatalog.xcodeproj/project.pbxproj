@@ -16,6 +16,7 @@
 		66849A571BD68F1D00D9350B /* NimbusModels.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 66849A4F1BD68F1D00D9350B /* NimbusModels.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		66849A681BD74A6000D9350B /* TableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A611BD68F3900D9350B /* TableModel.swift */; };
 		66849A691BD74C8C00D9350B /* TableCellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A601BD68F3900D9350B /* TableCellFactory.swift */; };
+		66A24D8B1BD936E00003B752 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A5D1BD68F3900D9350B /* Model.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -247,6 +248,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A24D8B1BD936E00003B752 /* Model.swift in Sources */,
 				66849A681BD74A6000D9350B /* TableModel.swift in Sources */,
 				66849A691BD74C8C00D9350B /* TableCellFactory.swift in Sources */,
 			);
@@ -445,6 +447,7 @@
 				66849A491BD68EFB00D9350B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		66849A581BD68F1D00D9350B /* Build configuration list for PBXNativeTarget "NimbusModels" */ = {
 			isa = XCConfigurationList;
@@ -453,6 +456,7 @@
 				66849A5A1BD68F1D00D9350B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

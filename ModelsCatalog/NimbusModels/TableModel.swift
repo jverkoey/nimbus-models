@@ -7,78 +7,46 @@
 import Foundation
 import UIKit
 
-public protocol SectionType {
-  typealias Element
-  var elements: [Element] { get set }
-}
+public struct TableSection<T>: SectionType {
+  public typealias Element = T
 
-public protocol ModelType : SequenceType {
-  typealias Section: SectionType
+  public var elements: [Element] {
+    return self._storage
+  }
 
-  var sections: [Section] { get set }
-}
+  private var _storage: [Element]
 
-extension ModelType where Self: SequenceType {
-  public func generate() -> AnyGenerator<Section.Element> {
-    return anyGenerator(FlattenGenerator(self.sections.lazy.map{ $0.elements }.generate()))
+  public init(_ elements: [Element]) {
+    self._storage = elements
+  }
+
+  public init(arrayLiteral elements: Element...) {
+    self._storage = elements
   }
 }
 
-extension ModelType {
-  public func objectAtPath(path: NSIndexPath) -> Section.Element {
-    assert(path.section < self.sections.count, "Section index out of bounds.")
-    assert(path.row < self.sections[path.section].elements.count, "Row index out of bounds.")
-    return self.sections[path.section].elements[path.row]
+public class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
+  public typealias Section = TableSection<T>
+
+  public var sections: [Section] {
+    return self._storage
   }
 
-  mutating func addObject(object: Section.Element) -> [NSIndexPath] {
-    return self.addObject(object, toSection: self.sections.count - 1)
+  private var _storage: [Section]
+
+  public func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
+    assert(toSection >= 0 && toSection < self._storage.count)
+    self._storage[toSection]._storage.append(element)
+    return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
   }
 
-  mutating func addObject(object: Section.Element, toSection sectionIndex: Int) -> [NSIndexPath] {
-    assert(sectionIndex < self.sections.count, "Section index out of bounds.")
-
-    self.sections[sectionIndex].elements.append(object)
-    return [NSIndexPath(forRow: self.sections[sectionIndex].elements.count - 1, inSection: sectionIndex)]
+  public func append(section: Section) -> NSIndexSet {
+    self._storage.append(section)
+    return NSIndexSet(index: self._storage.count)
   }
 
-}
-
-public protocol TableViewSectionType: SectionType {
-  var title: String? { get }
-  var footer: String? { get }
-}
-
-public struct AnySection<T>: SectionType {
-  public var elements: [T]
-
-  public init(_ elements: [T]) {
-    self.elements = elements
-  }
-}
-
-extension Array: SectionType {
-  public typealias ElementType = Element
-  public var elements: [ElementType] { get {
-      return self
-    }
-    set {
-      self = newValue
-    }}
-}
-
-extension Array: TableViewSectionType {
-  public var title: String? { return nil }
-  public var footer: String? { return nil }
-}
-
-public class TableModel<T: TableViewSectionType> : NSObject, UITableViewDataSource, ModelType {
-  // TODO: Sections should not be an array - they should be some new collection type that always
-  // returns NSIndexSets when making modifications.
-  public var sections: [T]
-
-  public init(sections: [T]) {
-    self.sections = sections
+  required public init(arrayLiteral elements: Section...) {
+    self._storage = elements
   }
 
   public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -89,22 +57,10 @@ public class TableModel<T: TableViewSectionType> : NSObject, UITableViewDataSour
     return self.sections[section].elements.count
   }
 
-  public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    return self.sections[section].title
-  }
-
-  public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-    return self.sections[section].footer
-  }
-
-  public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-    return false
-  }
-
   public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let object = self.objectAtPath(indexPath)
     let cell = UITableViewCell()
-    cell.textLabel?.text = "\(object)"
+    let section = self.sections[indexPath.section]
+    cell.textLabel?.text = section.elements[indexPath.row] as? String
     return cell
   }
 }

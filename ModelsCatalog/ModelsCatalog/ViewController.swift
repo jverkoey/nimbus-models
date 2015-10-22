@@ -16,7 +16,7 @@ class TitleObject: TableCellObject {
 class ViewController: UITableViewController {
   //private let model = TableModel(list: [TitleObject()], delegate: TableCellFactory.tableModelDelegate())
   //private let model = Model(sections: [(nil, objects: [TitleObject()]), (nil, objects: [TitleObject()])])
-  let model = TableModel(sections: [[5, 10]])
+  let model: TableModel<TitleObject> = [[TitleObject()]]
 
   override func viewDidLoad() {
     super.viewDidLoad()
