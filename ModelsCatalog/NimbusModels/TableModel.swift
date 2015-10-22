@@ -7,47 +7,34 @@
 import Foundation
 import UIKit
 
-public struct TableSection<T>: SectionType {
-  public typealias Element = T
-
-  public var elements: [Element] {
-    return self._storage
-  }
-
-  private var _storage: [Element]
-
-  public init(_ elements: [Element]) {
-    self._storage = elements
-  }
+public struct TableSection<Element>: SectionType {
+  public var elements: [Element] { return self._storage }
 
   public init(arrayLiteral elements: Element...) {
     self._storage = elements
   }
+
+  // Readwrite storage
+  private var _storage: [Element]
 }
 
-public class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
+public final class TableModel<T>: NSObject, UITableViewDataSource {
   public typealias Section = TableSection<T>
 
-  public var sections: [Section] {
-    return self._storage
+  public var sections: [Section] { return self._storage }
+
+  public override init() {
+    self._storage = []
+    super.init()
   }
 
-  private var _storage: [Section]
+  // ArrayLiteralConvertible
 
-  public func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
-    assert(toSection >= 0 && toSection < self._storage.count)
-    self._storage[toSection]._storage.append(element)
-    return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
-  }
-
-  public func append(section: Section) -> NSIndexSet {
-    self._storage.append(section)
-    return NSIndexSet(index: self._storage.count)
-  }
-
-  required public init(arrayLiteral elements: Section...) {
+  public init(arrayLiteral elements: Section...) {
     self._storage = elements
   }
+
+  // UITableViewDataSource
 
   public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     return self.sections.count
@@ -62,5 +49,21 @@ public class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
     let section = self.sections[indexPath.section]
     cell.textLabel?.text = section.elements[indexPath.row] as? String
     return cell
+  }
+
+  private var _storage: [Section]
+}
+
+extension TableModel: ModelType {
+
+  public func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
+    assert(toSection >= 0 && toSection < self._storage.count)
+    self._storage[toSection]._storage.append(element)
+    return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
+  }
+
+  public func append(section: Section) -> NSIndexSet {
+    self._storage.append(section)
+    return NSIndexSet(index: self._storage.count)
   }
 }

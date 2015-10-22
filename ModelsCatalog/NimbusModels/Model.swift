@@ -6,12 +6,10 @@
 
 import Foundation
 
-protocol SectionType : ArrayLiteralConvertible {
-  typealias Element
-  var elements: [Element] { get }
-}
-
-protocol ModelType : ArrayLiteralConvertible {
+/**
+ Conforming types must represent a two-level nested hierarchy of elements.
+ */
+public protocol ModelType : ArrayLiteralConvertible {
   typealias Section: SectionType
   var sections: [Section] { get }
 
@@ -19,10 +17,21 @@ protocol ModelType : ArrayLiteralConvertible {
   mutating func append(section: Self.Section) -> NSIndexSet
 }
 
+/**
+ The base type of sections contained within a ModelType.
+ 
+ Sections consistent of many elements.
+ */
+public protocol SectionType : ArrayLiteralConvertible {
+  typealias Element
+  var elements: [Element] { get }
+}
+
+// For-free APIs thanks for protocol extensions
 extension ModelType {
-  mutating func append(element: Self.Section.Element) -> NSIndexPath {
+  mutating public func append(element: Self.Section.Element) -> NSIndexPath {
     if self.sections.count == 0 {
-      self.append(Self.Section())
+      self.append([])
     }
     return self.append(element, toSection: self.sections.count - 1)
   }
