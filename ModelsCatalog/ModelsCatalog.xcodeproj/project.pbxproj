@@ -58,6 +58,7 @@
 		66849A5F1BD68F3900D9350B /* TableActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableActions.swift; sourceTree = "<group>"; };
 		66849A601BD68F3900D9350B /* TableCellFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableCellFactory.swift; sourceTree = "<group>"; };
 		66849A611BD68F3900D9350B /* TableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableModel.swift; sourceTree = "<group>"; };
+		66849A6A1BD88E6700D9350B /* demo.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = demo.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +85,7 @@
 			children = (
 				66849A371BD68EFB00D9350B /* ModelsCatalog */,
 				66849A501BD68F1D00D9350B /* NimbusModels */,
+				66849A6A1BD88E6700D9350B /* demo.playground */,
 				66849A361BD68EFB00D9350B /* Products */,
 			);
 			sourceTree = "<group>";
