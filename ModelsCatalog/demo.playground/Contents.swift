@@ -13,7 +13,6 @@ protocol ModelType : ArrayLiteralConvertible {
   var sections: [Section] { get }
 
   mutating func append(element: Self.Section.Element, toSection: Array<Section>.Index) -> NSIndexPath
-  mutating func append(element: Self.Section.Element) -> NSIndexPath
   mutating func append(section: Self.Section) -> NSIndexSet
 }
 
