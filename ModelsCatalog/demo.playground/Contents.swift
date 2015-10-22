@@ -14,10 +14,14 @@ protocol ModelType : ArrayLiteralConvertible {
 
   mutating func append(element: Self.Section.Element, toSection: Array<Section>.Index) -> NSIndexPath
   mutating func append(element: Self.Section.Element) -> NSIndexPath
+  mutating func append(section: Self.Section) -> NSIndexSet
 }
 
 extension ModelType {
   mutating func append(element: Self.Section.Element) -> NSIndexPath {
+    if self.sections.count == 0 {
+      self.append(Self.Section())
+    }
     return self.append(element, toSection: self.sections.count - 1)
   }
 }
@@ -52,8 +56,14 @@ class TableModel<T>: NSObject, ModelType, UITableViewDataSource {
   private var _storage: [Section]
 
   func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
+    assert(toSection >= 0 && toSection < self._storage.count)
     self._storage[toSection]._storage.append(element)
     return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
+  }
+
+  func append(section: Section) -> NSIndexSet {
+    self._storage.append(section)
+    return NSIndexSet(index: self._storage.count)
   }
 
   required init(arrayLiteral elements: Section...) {
@@ -80,12 +90,13 @@ extension NSIndexPath {
   public override var description: String { return "section \(self.section) item \(self.item)" }
 }
 
-var model: TableModel<String> = [["cell1", "cell"], ["group2"]]
+var model: TableModel<String> = []
+
 let tableView = UITableView(frame: CGRectMake(0, 0, 320, 480), style: .Grouped)
 
-model.append("Bob", toSection: 0)
+//model.append("Bob", toSection: 0)
 model.append("Bear")
-model.append("Cat")
+model.append(["Cat"])
 
 tableView.dataSource = model
 
