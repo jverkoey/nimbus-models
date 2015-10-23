@@ -17,6 +17,7 @@
 		66849A681BD74A6000D9350B /* TableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A611BD68F3900D9350B /* TableModel.swift */; };
 		66849A691BD74C8C00D9350B /* TableCellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A601BD68F3900D9350B /* TableCellFactory.swift */; };
 		66A24D8B1BD936E00003B752 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66849A5D1BD68F3900D9350B /* Model.swift */; };
+		66CE5C7F1BD952CC00E9C93E /* CellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE5C7E1BD952CC00E9C93E /* CellFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		66849A601BD68F3900D9350B /* TableCellFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableCellFactory.swift; sourceTree = "<group>"; };
 		66849A611BD68F3900D9350B /* TableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableModel.swift; sourceTree = "<group>"; };
 		66849A6A1BD88E6700D9350B /* demo.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = demo.playground; sourceTree = "<group>"; };
+		66CE5C7E1BD952CC00E9C93E /* CellFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 				66849A5D1BD68F3900D9350B /* Model.swift */,
 				66849A5E1BD68F3900D9350B /* MutableTableModel.swift */,
 				66849A5F1BD68F3900D9350B /* TableActions.swift */,
+				66CE5C7E1BD952CC00E9C93E /* CellFactory.swift */,
 				66849A601BD68F3900D9350B /* TableCellFactory.swift */,
 				66849A611BD68F3900D9350B /* TableModel.swift */,
 				66849A511BD68F1D00D9350B /* NimbusModels.h */,
@@ -248,6 +251,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66CE5C7F1BD952CC00E9C93E /* CellFactory.swift in Sources */,
 				66A24D8B1BD936E00003B752 /* Model.swift in Sources */,
 				66849A681BD74A6000D9350B /* TableModel.swift in Sources */,
 				66849A691BD74C8C00D9350B /* TableCellFactory.swift in Sources */,

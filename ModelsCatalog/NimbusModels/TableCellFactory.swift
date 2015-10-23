@@ -22,7 +22,7 @@ public protocol TableCellObjectConfiguration {
 public protocol TableCell {
   func updateCellWithObject(object: TableCellObject)
 }
-/*
+
 /**
 The TableCellFactory class is the binding logic between Objects and Cells and should be used as the
 delegate for a TableModel.
@@ -31,7 +31,7 @@ A contrived example of creating an empty model with the singleton TableCellFacto
 
     let model = TableModel(delegate: TableCellFactory.tableModelDelegate())
 */
-public class TableCellFactory : NSObject {
+/*public class TableCellFactory : NSObject {
 
   /**
   Returns a singleton TableModelDelegate instance for use as a TableModel delegate.

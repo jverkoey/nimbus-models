@@ -16,6 +16,7 @@ let tableView = UITableView(frame: CGRectMake(0, 0, 320, 480), style: .Grouped)
 model.append("Bear")
 model.append(["Cat"])
 model.append(["Cat", "Donkey"])
+model.append("Bear")
 
 tableView.dataSource = model
 
