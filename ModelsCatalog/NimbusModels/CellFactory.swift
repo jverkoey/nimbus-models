@@ -1,9 +1,9 @@
 import UIKit
 
-public protocol EntityBackedCellType {
-  typealias Entity
-
-  func updateCellWithEntity(entity: Entity)
+public struct AnyEntityBackedCell<Entity, Cell: UIView> {
+  static public func configure(entity: Entity, cell: Cell) {
+    print("Fallback")
+  }
 }
 
 public protocol CellRecyclerType {
@@ -34,7 +34,9 @@ extension UICollectionView : CellRecyclerType {
 
 extension CellFactoryType {
   public func cellForEntity(entity: Entity, indexPath: NSIndexPath, cellRecycler: CellRecycler) -> CellRecycler.Cell {
-    return cellRecycler.dequeueCell(withIdentifier: String(entity.dynamicType), forIndexPath: indexPath)
+    let cell = cellRecycler.dequeueCell(withIdentifier: String(entity.dynamicType), forIndexPath: indexPath)
+    AnyEntityBackedCell<Entity, CellRecycler.Cell>.configure(entity, cell: cell)
+    return cell
   }
 }
 

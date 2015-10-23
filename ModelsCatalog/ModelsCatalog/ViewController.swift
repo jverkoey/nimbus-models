@@ -1,18 +1,19 @@
 import UIKit
 import NimbusModels
 
-class TitleCell: UITableViewCell, EntityBackedCellType {
-  func updateCellWithEntity(entity: TitleEntity) {
-    self.textLabel?.text = entity.title
+class TitleCell: UITableViewCell {
+}
+
+class TitleEntity {
+  var title: String
+
+  init(_ title: String) {
+    self.title = title
   }
 }
 
-struct TitleEntity {
-  var title: String
-}
-
 class ViewController: UITableViewController {
-  let model: TableModel<TitleEntity> = [[TitleEntity(title: "Bob")]]
+  let model: TableModel<TitleEntity> = [[TitleEntity("Bob")]]
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -31,3 +32,8 @@ class ViewController: UITableViewController {
   }
 }
 
+extension AnyEntityBackedCell where Entity: TitleEntity, Cell: TitleCell {
+  func configure(entity: Entity, cell: Cell) {
+    cell.textLabel?.text = entity.title
+  }
+}
