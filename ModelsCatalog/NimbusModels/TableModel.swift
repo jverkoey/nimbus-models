@@ -22,11 +22,10 @@ public final class TableModel<Element>: NSObject, UITableViewDataSource {
   public typealias Section = TableSection<Element>
 
   public var sections: [Section] { return self._storage }
-  public var cellFactory: AnyCellFactory<Element, UITableView>
+  public var cellFactory = AnyCellFactory<Element, UITableView>()
 
   public override init() {
     self._storage = []
-    self.cellFactory = AnyCellFactory()
     super.init()
   }
 
@@ -34,7 +33,7 @@ public final class TableModel<Element>: NSObject, UITableViewDataSource {
 
   public init(arrayLiteral elements: Section...) {
     self._storage = elements
-    self.cellFactory = AnyCellFactory()
+    super.init()
   }
 
   // UITableViewDataSource
@@ -50,8 +49,7 @@ public final class TableModel<Element>: NSObject, UITableViewDataSource {
   public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let section = self.sections[indexPath.section]
     let entity = section._storage[indexPath.row]
-    let cell = self.cellFactory.cellForEntity(entity, indexPath: indexPath, cellRecycler: tableView)
-    return cell
+    return self.cellFactory.cellForEntity(entity, indexPath: indexPath, cellRecycler: tableView)
   }
 
   private var _storage: [Section]

@@ -17,6 +17,8 @@ class ViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    //model.configureCellRecycler(self.tableView)
+
     self.tableView.registerClass(TitleCell.self, forCellReuseIdentifier: String(TitleEntity))
 
     /*
