@@ -6,31 +6,40 @@ public protocol CellRecyclerType {
   func dequeueCell(withIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> Cell?
 }
 
+public protocol CellEntityType {
+  typealias CellClass: UIView
+  func cellClass() -> CellClass
+}
+
 public protocol CellFactoryType {
-  typealias Cell: UIView
-  typealias Object: NSObject
+  typealias Entity: CellEntityType
   typealias CellRecycler: CellRecyclerType
 
-  /// Creates a new cell for the given object and index path
-  func cellForObject(object: Object, indexPath: NSIndexPath, cellRecycler: CellRecycler) -> Cell
+  /// Creates a new cell for the given entity and index path
+  func cellForEntity(entity: Entity, indexPath: NSIndexPath, cellRecycler: CellRecycler) -> CellRecycler.Cell?
 }
 
 extension UITableView : CellRecyclerType {
   public func dequeueCell(withIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> UITableViewCell? {
-    return nil
+    return self.dequeueReusableCellWithIdentifier(identifier, forIndexPath: indexPath)
   }
 }
 
 extension UICollectionView : CellRecyclerType {
   public func dequeueCell(withIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> UICollectionViewCell? {
-    return nil
+    return self.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath)
   }
 }
 
-class CellFactory<CellType: UIView, Object, CellRecycler> : CellRecyclerType {
-  typealias Cell = CellType: UIView
+class AnyCellFactory<Entity: CellEntityType, CellRecycler: CellRecyclerType> {
+  func cellForEntity(entity: Entity, indexPath: NSIndexPath, cellRecycler: CellRecycler) -> CellRecycler.Cell {
+    var cell = cellRecycler.dequeueCell(withIdentifier: "Bob", forIndexPath: indexPath)
+    if cell == nil {
+      cell = CellRecycler.Cell()
+    }
 
-  func cellForObject(object: Object, indexPath: NSIndexPath, cellRecycler: CellRecycler) -> Cell {
+    // TODO: Configure the cell.
 
+    return cell!
   }
 }
