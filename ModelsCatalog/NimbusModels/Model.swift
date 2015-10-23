@@ -11,10 +11,11 @@ import Foundation
  */
 public protocol ModelType : ArrayLiteralConvertible {
   typealias Section: SectionType
+
   var sections: [Section] { get }
 
-  mutating func append(element: Self.Section.Element, toSection: Array<Section>.Index) -> NSIndexPath
-  mutating func append(section: Self.Section) -> NSIndexSet
+  mutating func append(element: Section.Element, toSection: Array<Section>.Index) -> NSIndexPath
+  mutating func append(section: Section) -> NSIndexSet
 }
 
 /**
@@ -29,7 +30,7 @@ public protocol SectionType : ArrayLiteralConvertible {
 
 // For-free APIs thanks for protocol extensions
 extension ModelType {
-  mutating public func append(element: Self.Section.Element) -> NSIndexPath {
+  mutating public func append(element: Section.Element) -> NSIndexPath {
     if self.sections.count == 0 {
       self.append([])
     }
