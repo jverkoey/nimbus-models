@@ -18,13 +18,15 @@ public struct TableSection<Element>: SectionType {
   private var _storage: [Element]
 }
 
-public final class TableModel<T>: NSObject, UITableViewDataSource {
-  public typealias Section = TableSection<T>
+public final class TableModel<Element>: NSObject, UITableViewDataSource {
+  public typealias Section = TableSection<Element>
 
   public var sections: [Section] { return self._storage }
+  public var cellFactory: AnyCellFactory<Element, UITableView>
 
   public override init() {
     self._storage = []
+    self.cellFactory = AnyCellFactory()
     super.init()
   }
 
@@ -32,6 +34,7 @@ public final class TableModel<T>: NSObject, UITableViewDataSource {
 
   public init(arrayLiteral elements: Section...) {
     self._storage = elements
+    self.cellFactory = AnyCellFactory()
   }
 
   // UITableViewDataSource
@@ -45,9 +48,9 @@ public final class TableModel<T>: NSObject, UITableViewDataSource {
   }
 
   public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = UITableViewCell()
     let section = self.sections[indexPath.section]
-    cell.textLabel?.text = section.elements[indexPath.row] as? String
+    let entity = section._storage[indexPath.row]
+    let cell = self.cellFactory.cellForEntity(entity, indexPath: indexPath, cellRecycler: tableView)
     return cell
   }
 
@@ -56,7 +59,7 @@ public final class TableModel<T>: NSObject, UITableViewDataSource {
 
 extension TableModel: ModelType {
 
-  public func append(element: T, toSection: Array<Section>.Index) -> NSIndexPath {
+  public func append(element: Element, toSection: Array<Section>.Index) -> NSIndexPath {
     assert(toSection >= 0 && toSection < self._storage.count)
     self._storage[toSection]._storage.append(element)
     return NSIndexPath(forRow: self._storage[toSection]._storage.count, inSection: toSection)
