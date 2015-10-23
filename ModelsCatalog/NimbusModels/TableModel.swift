@@ -18,12 +18,6 @@ public struct TableSection<Element>: SectionType {
   private var _storage: [Element]
 }
 
-public struct AnyEntityBackedCell<Entity, Cell: UIView> {
-  static public func configure(entity: Entity, cell: Cell) {
-    print("Fallback")
-  }
-}
-
 public final class TableModel<Element>: NSObject, UITableViewDataSource {
   public typealias Section = TableSection<Element>
 
@@ -55,7 +49,11 @@ public final class TableModel<Element>: NSObject, UITableViewDataSource {
     let section = self.sections[indexPath.section]
     let entity = section._storage[indexPath.row]
     let cell = tableView.dequeueReusableCellWithIdentifier(String(entity.dynamicType), forIndexPath: indexPath)
-    //AnyEntityBackedCell.configure(entity, cell: cell)
+    // TODO: How can we use Swift to make it easy to configure cell data here?
+    //       Cell registration is a run-time mechanism. We already need to map string identifiers to
+    //       cell classes in table/collection views.
+    //   [ ] Needs to have some facility for global registration. Do not want every table/collection
+    //       view to have to explicitly register the logic.
     return cell
   }
 

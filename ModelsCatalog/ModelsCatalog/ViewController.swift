@@ -19,21 +19,6 @@ class ViewController: UITableViewController {
     super.viewDidLoad()
 
     self.tableView.registerClass(TitleCell.self, forCellReuseIdentifier: String(TitleEntity))
-
-    /*
-    print(model.objectAtPath(NSIndexPath(forRow: 1, inSection: 0)))
-    print(model.sections[0])
-
-    for element in model {
-      print(element)
-    }*/
-
     self.tableView.dataSource = self.model
-  }
-}
-
-extension AnyEntityBackedCell where Entity: TitleEntity, Cell: TitleCell {
-  func configure(entity: Entity, cell: Cell) {
-    cell.textLabel?.text = entity.title
   }
 }
