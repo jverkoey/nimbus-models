@@ -12,8 +12,6 @@ struct TitleEntity {
 }
 
 class ViewController: UITableViewController {
-  //private let model = TableModel(list: [TitleObject()], delegate: TableCellFactory.tableModelDelegate())
-  //private let model = Model(sections: [(nil, objects: [TitleObject()]), (nil, objects: [TitleObject()])])
   let model: TableModel<TitleEntity> = [[TitleEntity(title: "Bob")]]
 
   override func viewDidLoad() {
