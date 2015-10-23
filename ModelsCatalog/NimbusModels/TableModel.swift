@@ -18,11 +18,16 @@ public struct TableSection<Element>: SectionType {
   private var _storage: [Element]
 }
 
+public struct AnyEntityBackedCell<Entity, Cell: UIView> {
+  static public func configure(entity: Entity, cell: Cell) {
+    print("Fallback")
+  }
+}
+
 public final class TableModel<Element>: NSObject, UITableViewDataSource {
   public typealias Section = TableSection<Element>
 
   public var sections: [Section] { return self._storage }
-  public var cellFactory = AnyCellFactory<Element, UITableView>()
 
   public override init() {
     self._storage = []
@@ -49,7 +54,9 @@ public final class TableModel<Element>: NSObject, UITableViewDataSource {
   public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let section = self.sections[indexPath.section]
     let entity = section._storage[indexPath.row]
-    return self.cellFactory.cellForEntity(entity, indexPath: indexPath, cellRecycler: tableView)
+    let cell = tableView.dequeueReusableCellWithIdentifier(String(entity.dynamicType), forIndexPath: indexPath)
+    //AnyEntityBackedCell.configure(entity, cell: cell)
+    return cell
   }
 
   private var _storage: [Section]
