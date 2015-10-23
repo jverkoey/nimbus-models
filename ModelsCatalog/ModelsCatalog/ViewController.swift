@@ -1,19 +1,20 @@
 import UIKit
 import NimbusModels
 
-class TitleCell: UITableViewCell {
-  func updateCellWithObject(object: TableCellObject) {
-    print(object)
+class TitleCell: UITableViewCell, EntityBackedCellType {
+  func updateCellWithEntity(entity: TitleEntity) {
+    self.textLabel?.text = entity.title
   }
 }
 
-class TitleEntity {
+struct TitleEntity {
+  var title: String
 }
 
 class ViewController: UITableViewController {
   //private let model = TableModel(list: [TitleObject()], delegate: TableCellFactory.tableModelDelegate())
   //private let model = Model(sections: [(nil, objects: [TitleObject()]), (nil, objects: [TitleObject()])])
-  let model: TableModel<TitleEntity> = [[TitleEntity()]]
+  let model: TableModel<TitleEntity> = [[TitleEntity(title: "Bob")]]
 
   override func viewDidLoad() {
     super.viewDidLoad()

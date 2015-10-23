@@ -1,5 +1,11 @@
 import UIKit
 
+public protocol EntityBackedCellType {
+  typealias Entity
+
+  func updateCellWithEntity(entity: Entity)
+}
+
 public protocol CellRecyclerType {
   typealias Cell: UIView
 
